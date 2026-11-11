@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#050b16;color:#eaf5ff;
+ font-family:Arial,sans-serif;min-height:100vh;
+}
+header{
+ padding:22px;text-align:center;
+ border-bottom:1px solid #15304a;
+}
+h1{color:#55caff;letter-spacing:5px}
+header p{color:#8da9c1;font-size:12px}
+main{max-width:650px;margin:auto;padding:22px}
+.status{text-align:center;color:#55caff;margin:20px}
+.orb{
+ width:125px;height:125px;margin:25px auto;
+ border:2px solid #36bfff;border-radius:50%;
+ box-shadow:0 0 30px #087dbb;
+ display:grid;place-items:center;
+ font-size:35px;
+}
+#messages{
+ min-height:210px;max-height:350px;overflow:auto;
+ background:#0b1727;border:1px solid #183b59;
+ border-radius:14px;padding:15px;
+}
+.msg{padding:10px;margin:8px 0;border-radius:9px;
+ background:#122943;line-height:1.5}
+.user{border-left:3px solid #4ccaff}
+.bot{border-left:3px solid #28d8b0}
+.controls{display:flex;gap:8px;margin-top:14px}
+input{
+ flex:1;min-width:0;padding:14px;
+ background:#101e30;color:white;
+ border:1px solid #31516e;border-radius:9px;
+}
+button{
+ background:#087eb7;color:white;border:0;
+ border-radius:9px;padding:13px;cursor:pointer;
+}
+.voice{width:100%;margin-top:12px;background:#124a68}
+footer{text-align:center;color:#69859e;
+ font-size:12px;padding:25px}
+</style>
+</head>
+<body>
+<header>
+<h1>J.A.R.V.I.S</h1>
+<p>JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+</header>
+<main>
+<div class="status" id="status">SYSTEM ONLINE</div>
+<div class="orb">◉</div>
+<h3>Personal AI Assistant</h3>
+<div id="messages">
+<div class="msg bot">
+Hello! I am JARVIS. Your personal assistant.
+How may I help you today?
+</div>
+</div>
+<div class="controls">
+<input id="question" placeholder="Ask JARVIS anything...">
+<button onclick="send()">Send</button>
+</div>
+<button class="voice" onclick="listen()">🎙 Talk to JARVIS</button>
+</main>
+<footer>JARVIS AI · PROJECT 2027</footer>
+<script>
+const messages=document.getElementById("messages");
+function add(text,type){
+ const div=document.createElement("div");
+ div.className="msg "+type;
+ div.textContent=text;
+ messages.appendChild(div);
+ messages.scrollTop=messages.scrollHeight;
+}
+function reply(q){
+ let a;
+ const s=q.toLowerCase();
+ if(s.includes("hello")||s.includes("hi"))
+ a="Hello! I am ready to assist you.";
+ else if(s.includes("your name"))
+ a="My name is JARVIS, your personal assistant.";
+ else if(s.includes("time"))
+ a="You can check your current local time on your device.";
+ else if(s.includes("business"))
+ a="Let's work on building your digital business step by step.";
+ else if(s.includes("help"))
+ a="I can chat, respond to voice input and help you plan tasks.";
+ else
+ a="I have received your request. My advanced AI brain is still being developed.";
+ add(a,"bot");
+ if("speechSynthesis" in window){
+ speechSynthesis.cancel();
+ speechSynthesis.speak(new SpeechSynthesisUtterance(a));
+ }
+}
+function send(){
+ const input=document.getElementById("question");
+ const q=input.value.trim();
+ if(!q)return;
+ add(q,"user");
+ input.value="";
+ reply(q);
+}
+document.getElementById("question").addEventListener("keydown",e=>{
+ if(e.key==="Enter")send();
+});
+function listen(){
+ const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Speech){
+ alert("Voice recognition is not supported in this browser.");
+ return;
+ }
+ const rec=new Speech();
+ rec.lang="en-ZA";
+ rec.onstart=()=>document.getElementById("status").textContent="LISTENING...";
+ rec.onresult=e=>{
+ document.getElementById("question").value=e.results[0][0].transcript;
+ send();
+ };
+ rec.onerror=()=>document.getElementById("status").textContent="SYSTEM ONLINE";
+ rec.onend=()=>document.getElementById("status").textContent="SYSTEM ONLINE";
+ rec.start();
+}
+</script>
+</body>
+</html>
